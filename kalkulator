@@ -1,0 +1,656 @@
+#if defined(UNICODE) && !defined(_UNICODE)
+    #define _UNICODE
+#elif defined(_UNICODE) && !defined(UNICODE)
+    #define UNICODE
+#endif
+#include <errno.h>
+#include <stdlib.h>
+#include <string>
+#include <tchar.h>
+#include <windows.h>
+#include <windowsx.h>
+#include <iostream>
+#include <string.h>
+#include <cstdlib>
+#define ID_PRZYCISK1 501
+#define ID_PRZYCISK2 502
+#define ID_PRZYCISK3 503
+#define ID_PRZYCISK4 504
+#define ID_PRZYCISK5 505
+
+/*  Declare Windows procedure  */
+LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
+
+/*  Make the class name into a global variable  */
+TCHAR moja_klasa[ ] = _T ("CodeBlocksWindowsApp");
+HWND groupbox1;
+HWND groupbox2;
+HWND groupbox3;
+HWND globalny_element_statyczny_komentarz1;
+HWND globalny_element_statyczny_komentarz2;
+HWND globalny_element_statyczny_komentarz3;
+HWND globalny_element_statyczny_komentarz4;
+HWND globalny_element_statyczny_komentarz5;
+HWND globalny_element_statyczny_komentarz6;
+HWND globalny_element_statyczny_komentarz7;
+HWND globalny_element_statyczny_komentarz8;
+HWND globalny_element_statyczny_komentarz9;
+HWND globalny_element_statyczny_komentarz10;
+HWND globalny_element_statyczny_komentarz11;
+HWND globalny_element_statyczny_komentarz12;
+HWND globalny_przycisk;
+HWND globalny_przycisk_radiowy1;
+HWND globalny_przycisk_radiowy2;
+HWND globalny_wiek;
+HWND globalny_wzrost;
+HWND globalna_waga;
+HWND cele;
+HWND aktywnosc_fizyczna_h;
+HWND zapotrzebowanie_enegetyczne;
+HWND dzienne_zuzycie;
+HWND stosunek_procentowy;
+HWND podaz_weglowodanow;
+HWND podaz_tluszczu;
+HWND podaz_bialka;
+HWND przycisk_oblicz1;
+HWND przycisk_oblicz2;
+HWND przycisk_oblicz3;
+
+//HFONT hNormalFont =( HFONT ) GetStockObject( DEFAULT_GUI_FONT );
+float  mnoznik1, wynik1,wynik2;
+int wybor1, wybor2,wiek, aktywnosc_fizyczna, bmr1, bmr2, wzrost, waga, bialko, weglowodany, tluszcz, plec;
+int stan_radiobutton1, stan_radiobutton2;
+using namespace std;
+
+void funkcja_liczaca_podaz ( int bialko, int weglowodany, int tluszcz)
+{
+                DWORD dlugosc = GetWindowTextLength(podaz_weglowodanow );
+                LPSTR lweglowodany =( LPSTR ) GlobalAlloc( GPTR, dlugosc + 1 );
+                GetWindowText( podaz_weglowodanow, lweglowodany, dlugosc + 1 );
+
+                DWORD dlugosc1 = GetWindowTextLength(podaz_tluszczu );
+                LPSTR ltluszcz =( LPSTR ) GlobalAlloc( GPTR, dlugosc1 + 1 );
+                GetWindowText( podaz_weglowodanow, ltluszcz, dlugosc1 + 1 );
+
+                DWORD dlugosc2 = GetWindowTextLength(podaz_bialka );
+                LPSTR lbialko =( LPSTR ) GlobalAlloc( GPTR, dlugosc2 + 1 );
+                GetWindowText( podaz_bialka, lbialko, dlugosc2 + 1 );
+    bialko=  atoi(lbialko);
+    tluszcz = atoi(ltluszcz);
+    weglowodany = atoi(lweglowodany);
+    int podaz_calkowita=(4*bialko)+(4*weglowodany)+(9*tluszcz);
+    char buf2[16]; // need a buffer for that
+    sprintf(buf2,"%d",podaz_calkowita);
+    const char* ppp = buf2;
+    SetWindowText(dzienne_zuzycie, ppp);
+
+}
+void  funkcja_liczaca_zapotrzebowanie (  int wzrost, int waga, int wiek, int plec , int aktywnosc_fizyczna, float mnoznik1 )
+{
+    DWORD dlugosc3 = GetWindowTextLength(globalny_wiek );
+    LPSTR lwiek =( LPSTR ) GlobalAlloc( GPTR, dlugosc3 + 1 );
+    GetWindowText( globalny_wiek, lwiek, dlugosc3 + 1 );
+
+    DWORD dlugosc4 = GetWindowTextLength(globalna_waga );
+    LPSTR lwaga =( LPSTR ) GlobalAlloc( GPTR, dlugosc4 + 1 );
+    GetWindowText( globalna_waga, lwaga, dlugosc4 + 1 );
+
+    DWORD dlugosc5 = GetWindowTextLength(globalny_wzrost );
+    LPSTR lwzrost =( LPSTR ) GlobalAlloc( GPTR, dlugosc5 + 1 );
+    GetWindowText( globalny_wzrost, lwzrost, dlugosc5 + 1 );
+
+    wiek =  atoi(lwiek);
+    waga = atoi(lwaga);
+    wzrost = atoi(lwzrost);
+    int stan_radiobutton1 = Button_GetCheck(globalny_przycisk_radiowy1);
+    int stan_radiobutton2 = Button_GetCheck(globalny_przycisk_radiowy2);
+    if (stan_radiobutton1==BST_CHECKED)
+            plec=0;
+    if (stan_radiobutton2==BST_CHECKED)
+            plec=1;
+    int wybor1 = ComboBox_GetCurSel( cele );
+        switch (wybor1)
+    {
+    case 0 :
+        mnoznik1=0.85;
+        break;
+
+    case 1 :
+        mnoznik1=1;
+        break;
+
+    case 2 :
+        mnoznik1=1.15;
+        break;
+    }
+    int wybor2 = ComboBox_GetCurSel( aktywnosc_fizyczna_h );
+        switch (wybor2)
+    {
+        case 0:
+            aktywnosc_fizyczna=1;
+            break;
+        case 1:
+            aktywnosc_fizyczna=1.2;
+            break;
+        case 2:
+            aktywnosc_fizyczna=1.4;
+            break;
+        case 3:
+            aktywnosc_fizyczna=1.6;
+            break;
+        case 4:
+            aktywnosc_fizyczna=1.8;
+            break;
+        case 5:
+            aktywnosc_fizyczna=2;
+            break;
+    }
+if (plec ==0)
+    {
+        bmr1=66.5+(13.7*waga)+(5*wzrost)-(6.8*wiek);
+        float wynik1=bmr1*mnoznik1*aktywnosc_fizyczna;
+        char buf[16]; // need a buffer for that
+        sprintf(buf,"%f",wynik1);
+        const char* p = buf;
+        SetWindowText(zapotrzebowanie_enegetyczne, p);
+    }
+if(plec==1)
+    {
+        bmr2=65.5+(9.6*waga)+(1.85*wzrost)-(4.7*wiek);
+        float wynik2=bmr2*mnoznik1*aktywnosc_fizyczna;
+        char buf1[16]; // need a buffer for that
+        sprintf(buf1,"%f",wynik2);
+        const char* pp = buf1;
+        SetWindowText(zapotrzebowanie_enegetyczne, pp);
+
+    }
+
+}
+
+int WINAPI WinMain (HINSTANCE hThisInstance,
+                     HINSTANCE hPrevInstance,
+                     LPSTR lpszArgument,
+                     int nCmdShow)
+{
+    HWND hwnd;               /* This is the handle for our window */
+    MSG komunikaty;            /* Here messages to the application are saved */
+    WNDCLASSEX klasa_kalkulatora;        /* Data structure for the windowclass */
+
+    /* The Window structure */
+    klasa_kalkulatora.hInstance = hThisInstance;
+    klasa_kalkulatora.lpszClassName = moja_klasa;
+    klasa_kalkulatora.lpfnWndProc = WindowProcedure;      /* This function is called by windows */
+    klasa_kalkulatora.style = CS_DBLCLKS;                 /* Catch double-clicks */
+    klasa_kalkulatora.cbSize = sizeof (WNDCLASSEX);
+
+    /* Use default icon and mouse-pointer */
+    klasa_kalkulatora.hIcon = LoadIcon (NULL, IDI_APPLICATION);
+    klasa_kalkulatora.hIconSm = LoadIcon (NULL, IDI_APPLICATION);
+    klasa_kalkulatora.hCursor = LoadCursor (NULL, IDC_ARROW);
+    klasa_kalkulatora.lpszMenuName = NULL;                 /* No menu */
+    klasa_kalkulatora.cbClsExtra = 0;                      /* No extra bytes after the window class */
+    klasa_kalkulatora.cbWndExtra = 0;                      /* structure or the window instance */
+    /* Use Windows's default colour as the background of the window */
+    klasa_kalkulatora.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
+
+    /* Register the window class, and if it fails quit the program */
+    if (!RegisterClassEx (&klasa_kalkulatora))
+        {
+            MessageBox( NULL, "Blad rejestracji tego okna!", "Niestety",
+            MB_ICONEXCLAMATION | MB_OK );
+            return 1;
+        }
+
+
+    /* The class is registered, let's create the program*/
+    hwnd = CreateWindowEx (
+           0,                   /* Extended possibilites for variation */
+           moja_klasa,         /* Classname */
+           _T("Okienkowy kalulator kalorii"),       /* Title Text */
+           WS_OVERLAPPEDWINDOW, /* default window */
+           CW_USEDEFAULT,       /* Windows decides the position */
+           CW_USEDEFAULT,       /* where the window ends up on the screen */
+           1100,                 /* The programs width */
+           650,                 /* and height in pixels */
+           HWND_DESKTOP,        /* The window is a child-window to desktop */
+           NULL,                /* No menu */
+           hThisInstance,       /* Program Instance handler */
+           NULL);               /* No Window Creation data */
+
+      groupbox1= CreateWindowEx(
+           0,
+           "BUTTON",
+           "ZAPOTRZEBOWANIE ENERGETYCZNE",
+           WS_CHILD | WS_VISIBLE | SS_LEFT | BS_GROUPBOX,
+           0,0,420,600,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+      globalny_element_statyczny_komentarz1= CreateWindowEx(
+           0,
+           "STATIC",
+           NULL,
+           WS_CHILD | WS_VISIBLE | SS_LEFT ,
+           5,20,130,20,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        SetWindowText ( globalny_element_statyczny_komentarz1, "wybierz p³ec" );
+
+      globalny_przycisk_radiowy1= CreateWindowEx(
+            0,
+            "BUTTON",
+            "kobieta",
+            WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP ,//| BM_GETCHECK,
+            5,50,130,20,
+            hwnd,
+            ( HMENU ) ID_PRZYCISK1,
+            hThisInstance,
+            NULL );
+           // int ID_RADIOBUTTON1 = GetDlgCtrlID( globalny_przycisk_radiowy1 );
+      globalny_przycisk_radiowy2 = CreateWindowEx(
+            0,
+            "BUTTON",
+            "mê¿czyzna",
+            WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON ,//| BM_GETCHECK,
+            5,70,130,20,
+            hwnd,
+            ( HMENU ) ID_PRZYCISK2,
+            hThisInstance,
+            NULL );
+           // int ID_RADIOBUTTON2 = GetDlgCtrlID( globalny_przycisk_radiowy2 );
+
+        globalny_element_statyczny_komentarz2= CreateWindowEx(
+           0,
+           "STATIC",
+           NULL,
+           WS_CHILD | WS_VISIBLE | SS_LEFT,
+           5,95,130,20,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        SetWindowText ( globalny_element_statyczny_komentarz2, "podaj wiek w latach" );
+
+        globalny_wiek = CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "EDIT",
+            NULL,
+            WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER,
+            5, 120, 80, 30,
+            hwnd,
+            NULL,
+            hThisInstance,
+            NULL );
+
+        globalny_element_statyczny_komentarz3= CreateWindowEx(
+           0,
+           "STATIC",
+           NULL,
+           WS_CHILD | WS_VISIBLE | SS_LEFT,
+           5,155,130,40,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        SetWindowText ( globalny_element_statyczny_komentarz3, "podaj wzrost w centymetrach" );
+        globalny_wzrost = CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "EDIT",
+            NULL,
+            WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER,
+            5, 195, 80, 30,
+            hwnd,
+            NULL,
+            hThisInstance,
+            NULL );
+
+        globalny_element_statyczny_komentarz4= CreateWindowEx(
+           0,
+           "STATIC",
+           NULL,
+           WS_CHILD | WS_VISIBLE | SS_LEFT,
+           5,235,130,40,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        SetWindowText ( globalny_element_statyczny_komentarz4, "podaj wagê w kilogramach" );
+        globalna_waga = CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "EDIT",
+            NULL,
+            WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER,
+            5, 280, 80, 30,
+            hwnd,
+            NULL,
+            hThisInstance,
+            NULL );
+
+        globalny_element_statyczny_komentarz5= CreateWindowEx(
+           0,
+           "STATIC",
+           NULL,
+           WS_CHILD | WS_VISIBLE | SS_LEFT,
+           5,315,130,20,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        SetWindowText ( globalny_element_statyczny_komentarz5, "wybierz swój cel" );
+        HWND cele = CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "COMBOBOX",
+            NULL,
+            WS_CHILD | WS_VISIBLE | WS_BORDER | CBS_DROPDOWNLIST | CB_GETCURSEL,
+            5,340,300,80,
+            hwnd,
+            NULL,
+            hThisInstance,
+            NULL );
+        SendMessage( cele, CB_ADDSTRING, 0,( LPARAM ) "1. Chcê schudn¹æ" );
+        SendMessage( cele, CB_ADDSTRING, 0,( LPARAM ) "2. Chcê utrzymac dotychczasow¹ wagê" );
+        SendMessage( cele, CB_ADDSTRING, 0,( LPARAM ) "3. Chcê przytyæ" );
+
+        globalny_element_statyczny_komentarz6= CreateWindowEx(
+           0,
+           "STATIC",
+           NULL,
+           WS_CHILD | WS_VISIBLE | SS_LEFT,
+           5,425,130,35,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        SetWindowText ( globalny_element_statyczny_komentarz6, "wybierz swoj¹ aktywnoœæ fizyczn¹" );
+        HWND aktywnosc_fizyczna_h = CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "COMBOBOX",
+            NULL,
+            WS_CHILD | WS_VISIBLE | WS_BORDER | CBS_DROPDOWNLIST | CB_GETCURSEL,
+            5,465,400,130,
+            hwnd,
+            NULL,
+            hThisInstance,
+            NULL );
+        SendMessage( aktywnosc_fizyczna_h, CB_ADDSTRING, 0,( LPARAM ) "1. Lezacy lub siedzacy tryb zycia, brak aktywnosci fizycznej" );
+        SendMessage( aktywnosc_fizyczna_h, CB_ADDSTRING, 0,( LPARAM ) "2. Praca siedzaca, aktywnosc fizyczna na niskim poziomie" );
+        SendMessage( aktywnosc_fizyczna_h, CB_ADDSTRING, 0,( LPARAM ) "3. Praca nie fizyczna, trening 2 razy w tygodniu" );
+        SendMessage( aktywnosc_fizyczna_h, CB_ADDSTRING, 0,( LPARAM ) "4. Lekka praca fizyczna, trening 3-4 razy w tygodniu" );
+        SendMessage( aktywnosc_fizyczna_h, CB_ADDSTRING, 0,( LPARAM ) "5. Praca fizyczna, trening 5 razy w tygodniu" );
+        SendMessage( aktywnosc_fizyczna_h, CB_ADDSTRING, 0,( LPARAM ) "6. Ciezka praca fizyczna, codzienny trening" );
+
+
+   /* int wybor2 = ComboBox_GetCurSel( aktywnosc_fizyczna_h );;
+        switch (wybor2)
+    {
+        case 0:
+            aktywnosc_fizyczna=1;
+            break;
+
+        case 1:
+            aktywnosc_fizyczna=1.2;
+            break;
+
+        case 2:
+            aktywnosc_fizyczna=1.4;
+            break;
+
+        case 3:
+            aktywnosc_fizyczna=1.6;
+            break;
+
+        case 4:
+            aktywnosc_fizyczna=1.8;
+            break;
+
+        case 5:
+            aktywnosc_fizyczna=2;
+            break;
+    */
+
+        przycisk_oblicz1 = CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "BUTTON",
+            "oblicz zapotrzebow. energet.",
+            WS_CHILD | WS_VISIBLE | SS_LEFT,
+            160, 505,250, 80,
+            hwnd,
+            (HMENU) ID_PRZYCISK3,
+            hThisInstance,
+            NULL );
+
+         groupbox2= CreateWindowEx(
+           0,
+           "BUTTON",
+           "DANE TWOJEGO DZISIEJSZEGO SPO¯YCIA ",
+           WS_CHILD | WS_VISIBLE | SS_LEFT | BS_GROUPBOX,
+           450,0,400,350,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        globalny_element_statyczny_komentarz10= CreateWindowEx(
+           0,
+           "STATIC",
+           NULL,
+           WS_CHILD | WS_VISIBLE | SS_LEFT,
+           460,70,130,55,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        SetWindowText ( globalny_element_statyczny_komentarz10, "wska¿ poda¿ weglowodanów w gramach:" );
+        podaz_weglowodanow= CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "EDIT",
+            NULL,
+            WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER ,
+            600,70,130,55,
+            hwnd,
+            NULL,
+            hThisInstance,
+            NULL );
+
+        globalny_element_statyczny_komentarz11= CreateWindowEx(
+           0,
+           "STATIC",
+           NULL,
+           WS_CHILD | WS_VISIBLE | SS_LEFT,
+           460,150,130,55,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        SetWindowText ( globalny_element_statyczny_komentarz11, "wska¿ poda¿ t³uszczu w gramach:" );
+        podaz_tluszczu= CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "EDIT",
+            NULL,
+            WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER,
+            600,150,130,55,
+            hwnd,
+            NULL,
+            hThisInstance,
+            NULL );
+
+        globalny_element_statyczny_komentarz11= CreateWindowEx(
+           0,
+           "STATIC",
+           NULL,
+           WS_CHILD | WS_VISIBLE | SS_LEFT,
+           460,230,130,55,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        SetWindowText ( globalny_element_statyczny_komentarz11, "wska¿ poda¿ bia³ka w gramach:" );
+        podaz_bialka= CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "EDIT",
+            NULL,
+            WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_NUMBER,
+            600,230,130,55,
+            hwnd,
+            NULL,
+            hThisInstance,
+            NULL );
+
+        przycisk_oblicz2 = CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "BUTTON",
+            "oblicz dzisiejsze spo¿ycie",
+            WS_CHILD | WS_VISIBLE | SS_LEFT,
+            590, 295,250, 45,
+            hwnd,
+            (HMENU) ID_PRZYCISK4,
+            hThisInstance,
+            NULL );
+
+        groupbox3= CreateWindowEx(
+           0,
+           "BUTTON",
+           "WYNIKI",
+           WS_CHILD | WS_VISIBLE | SS_LEFT | BS_GROUPBOX,
+           450,350,580,250,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        globalny_element_statyczny_komentarz7= CreateWindowEx(
+           0,
+           "STATIC",
+           NULL,
+           WS_CHILD | WS_VISIBLE | SS_LEFT,
+           460,400,130,70,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        SetWindowText ( globalny_element_statyczny_komentarz7, "twoje zapotrzebowanie energetyczne wynosi:" );
+        zapotrzebowanie_enegetyczne= CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "EDIT",
+            NULL,
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY,
+            460, 475, 130, 40,
+            hwnd,
+            NULL,
+            hThisInstance,
+            NULL );
+        globalny_element_statyczny_komentarz8= CreateWindowEx(
+           0,
+           "STATIC",
+           NULL,
+           WS_CHILD | WS_VISIBLE | SS_LEFT,
+           620,400,130,70,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        SetWindowText ( globalny_element_statyczny_komentarz8, "twoje dzisiejsze spo¿ycie kalorii to:");
+        dzienne_zuzycie= CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "EDIT",
+            NULL,
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY,
+            620, 475, 130, 40,
+            hwnd,
+            NULL,
+            hThisInstance,
+            NULL );
+        globalny_element_statyczny_komentarz12= CreateWindowEx(
+           0,
+           "STATIC",
+           NULL,
+           WS_CHILD | WS_VISIBLE | SS_LEFT,
+           780,400,200,70,
+           hwnd,
+           NULL,
+           hThisInstance,
+           NULL );
+        SetWindowText ( globalny_element_statyczny_komentarz12, "stosunek dzisiejszego spo¿ycia kalorii do dziennego zapotrzebowania w procentach wynosi:");
+        stosunek_procentowy = CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "EDIT",
+            NULL,
+            WS_CHILD | WS_VISIBLE | WS_BORDER  | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY,
+            780, 475, 200, 40,
+            hwnd,
+            NULL,
+            hThisInstance,
+            NULL );
+        przycisk_oblicz3 = CreateWindowEx(
+            WS_EX_CLIENTEDGE,
+            "BUTTON",
+            "oblicz stos. proc. spo¿ycia",
+            WS_CHILD | WS_VISIBLE | SS_LEFT,
+            780, 530 ,200, 45,
+            hwnd,
+            (HMENU) ID_PRZYCISK5,
+            hThisInstance,
+            NULL );
+
+
+    /* Make the window visible on the screen */
+    ShowWindow (hwnd, nCmdShow);
+    UpdateWindow( hwnd );
+
+    /* Run the message loop. It will run until GetMessage() returns 0 */
+    while (GetMessage (&komunikaty, NULL, 0, 0))
+    {
+        /* Translate virtual-key messages into character messages */
+        TranslateMessage(&komunikaty);
+        /* Send message to WindowProcedure */
+        DispatchMessage(&komunikaty);
+    }
+
+    /* The program return-value is 0 - The value that PostQuitMessage() gave */
+    return komunikaty.wParam;
+}
+
+
+/*  This function is called by the Windows function DispatchMessage()  */
+
+LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    switch (message)                  /* handle the messages */
+    {
+        case WM_CLOSE:
+                DestroyWindow( hwnd );
+        break;
+
+        case WM_DESTROY:
+                PostQuitMessage (0);       /* send a WM_QUIT to the message queue */
+        break;
+        case WM_COMMAND:
+            //MessageBox(hwnd, "test","Test",MB_ICONASTERISK);
+        /*if ((HWND) lParam == przycisk_oblicz1)
+           void funkcja_liczaca_zapotrzebowanie( int wzrost, int waga, int wiek, int plec , int aktywnosc_fizyczna, float mnoznik1);
+       */
+       switch (wParam)
+        {
+            case ID_PRZYCISK1:
+                plec=0;
+                break;
+            case ID_PRZYCISK2:
+                plec=1;
+                break;
+            case ID_PRZYCISK3:
+                            //MessageBox(hwnd, "test","Test",MB_ICONASTERISK);
+                void funkcja_liczaca_zapotrzebowanie( int wzrost, int waga, int wiek, int plec , int aktywnosc_fizyczna, float  mnoznik1);
+            break;
+            case ID_PRZYCISK4:
+                void funkcja_liczaca_podaz(int bialko, int weglowodany, int tluszcz);
+            break;
+        }
+            break;
+            default:                      // for messages that we don't deal with*/
+                return DefWindowProc (hwnd, message, wParam, lParam);
+
+    }
+
+    return 0;
+}
